@@ -12,12 +12,12 @@ from math import floor
     
    # '''
     
-maquinas = 4
-trabajos = 4
+maquinas = 3
+trabajos = 3
 #poblacion = [(i + 1) for i in range(maquinas * trabajos)] #Definir poblacion inicial
 #shuffle(poblacion)
 
-tamano = 2
+tamano = 1
 poblacion = []
 
 for x in range(tamano):
@@ -27,18 +27,26 @@ for x in range(tamano):
 
 print poblacion
 
+
 def fila(m):
-    return ceil(m/maquinas)
+    f = int(ceil(m/maquinas))
+    return f
     
 def columna(n):
-    c = n % maquinas
+    c = n % maquinas 
     if c == 0:
-        c = maquinas
+        c = maquinas 
     
     return c 
- 
+
+      
 for x in range(tamano):
-    poblacion[x]
+    mover = [(0) for i in range(maquinas * trabajos)] # Creacion de vector de movimientos
+    
+    
+            
+               
+print poblacion            
 
    # def __init__(self, params):
     #    '''

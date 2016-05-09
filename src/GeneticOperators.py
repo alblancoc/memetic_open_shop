@@ -132,14 +132,18 @@ class GeneticOperators(object):
         return son
     
    
-'''
+
 operators = GeneticOperators()
 fat1 = [1,2,3,4,5,6,7,8,9]
-
 fat2 = [1,3,5,7,9,8,6,4,2]
 
 sons = operators.swapMutation(fat1, fat2)
 print "Mutation 1"
+print sons[0]
+print sons[1]
+
+sons = operators.swapMutation(fat1, fat2)
+print "Mutation 2"
 print sons[0]
 print sons[1]
 
@@ -148,4 +152,3 @@ sons = operators.crossover(sons[0], sons[1])
 print "Cross 1"
 print sons[0]
 print sons[1]
-'''
