@@ -6,7 +6,7 @@ Created on Apr 26, 2016
 import random
 import copy
 
-class GeneticOperators(object):
+class OperadoresGeneticos(object):
     '''
     classdocs
     '''
@@ -16,27 +16,30 @@ class GeneticOperators(object):
         Constructor
         '''
         
-    def swapMutation(self, father1, father2):
-        sonsChromosomes = []
+    def swapMutation(self, padre1, padre1):
+        hijos = []
          
-        sonsChromosomes.append(father1)
-        sonsChromosomes.append(father2)
+        #Se colocan los cromosomas de los padres en los hijos 
+        hijos.append(padre1)
+        hijos.append(padre2)
         
-        firstPoint = random.randint(0, len(father1) - 1)
-        secondPoint = random.randint(0, len(father1) - 1)
+        #Se generan los puntos de intercambio de forma aleatoria
+        primerPunto = random.randint(0, len(padre1) - 1)
+        segundoPunto = random.randint(0, len(padre1) - 1)
         
-        while(firstPoint == secondPoint):
-            secondPoint = random.randint(0, len(father1) - 1)
+        #Se verifica que los dos puntos de intercambio no sean los mismos
+        while(primerPunto == segundoPunto):
+            segundoPunto = random.randint(0, len(padre1) - 1)
         
-        tempValue = sonsChromosomes[0][firstPoint]
-        sonsChromosomes[0][firstPoint] = sonsChromosomes[0][secondPoint]
-        sonsChromosomes[0][secondPoint] = tempValue
+        valorTemporal = hijos[0][primerPunto]
+        hijos[0][primerPunto] = hijos[0][segundoPunto]
+        hijos[0][segundoPunto] = valorTemporal
          
-        tempValue = sonsChromosomes[1][firstPoint]
-        sonsChromosomes[1][firstPoint] = sonsChromosomes[1][secondPoint]
-        sonsChromosomes[1][secondPoint] = tempValue 
+        valorTemporal = hijos[1][primerPunto]
+        hijos[1][primerPunto] = hijos[1][segundoPunto]
+        hijos[1][segundoPunto] = valorTemporal 
         
-        return sonsChromosomes
+        return hijos
     
     
     def crossover(self, father1, father2):
@@ -133,22 +136,22 @@ class GeneticOperators(object):
     
    
 
-operators = GeneticOperators()
+operadores = OperadoresGeneticos()
 fat1 = [1,2,3,4,5,6,7,8,9]
 fat2 = [1,3,5,7,9,8,6,4,2]
 
-sons = operators.swapMutation(fat1, fat2)
+sons = operadores.swapMutation(fat1, fat2)
 print "Mutation 1"
 print sons[0]
 print sons[1]
 
-sons = operators.swapMutation(fat1, fat2)
+sons = operadores.swapMutation(fat1, fat2)
 print "Mutation 2"
 print sons[0]
 print sons[1]
 
 
-sons = operators.crossover(sons[0], sons[1])
+sons = operadores.crossover(sons[0], sons[1])
 print "Cross 1"
 print sons[0]
 print sons[1]

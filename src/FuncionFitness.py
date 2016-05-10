@@ -4,7 +4,7 @@ Created on Apr 26, 2016
 @author: carlosandressierra
 '''
 
-class FitnessFunction(object):
+class FuncionFitness(object):
     '''
     classdocs
     '''
