@@ -54,12 +54,12 @@ def mejora(poblacion):
                     while movimiento < (maquinas - 1) and act < (maquinas*trabajos)-maquinas-2 and act2 < (maquinas*trabajos)-maquinas-2:
                         while mover[(poblacion[x][act+1]-1)] == 1 :
                             act += 1
-                        if act > (i+1):
+                        if act > (i+1) :
                            poblacion[x][i+1] = poblacion[x][act+1]
                            poblacion[x][act+1] = cambio
                            movimiento += 1
                            z -= 1
-                        if (act2 >= (i+1)):
+                        elif (act2 >= (i+1)):
                             poblacion[x][i+1] = poblacion[x][act2+1]
                             poblacion[x][act2+1] = cambio
                             movimiento += 1
