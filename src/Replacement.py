@@ -5,7 +5,7 @@ Created on Apr 26, 2016
 '''
 from random import random
 
-class Replacement(object):
+class Reemplazo(object):
     '''
     classdocs
     '''
@@ -15,29 +15,31 @@ class Replacement(object):
         Constructor
         '''
     
+    #Estrategia de reemplazo generacional
+    def generacional(self, padre1, padre2, hijo1, hijo2):
+        siguienteGeneracion = []
+        siguienteGeneracion.append(hijo1) #pasa el hijo 1
+        siguienteGeneracion.append(hijo2) #pasa el hijo 2
         
+        return siguienteGeneracion
     
-    def generacional(self, father1, father2, son1, son2):
-        winners = []
-        winners.append(son1)
-        winners.append(son2)
+    
+    
+    #Estrategia de ruleta para definir el ganador entre dos individuos de acuerdo a su fitness
+    def ruleta(self, jugador1, jugador2):
+        total = ( jugador1.fitness + jugador2.fitness ) #se suma el desempeno de los dos individuos, para normalizar la ruleta
         
-        return winners
-    
-    
-    
-    def ruleta(self, player1, player2):
-        desempeno1 = player1.fitness 
-        desempeno2 = player2.fitness
-        total = (desempeno1+desempeno2)
-        punto = 1 - (desempeno1/total)
+        punto = 1 - (jugador1.fitness / total) #se define la proporcion de la ruleta que corresponde al jugador 1
         aleatorio = random()
-        if punto >= aleatorio:
-            winner = player1
+        
+        if punto >= aleatorio: #si la ruleta cae en la parte del jugador 1 este gano, sino el ganador sera el jugador 2
+            ganador = jugador1
         else:
-            winner = player2
+            ganador = jugador2
             
-        return winner
+        return ganador
+    
+    
     
     def steadyState(self, padre1, padre2, hijo1, hijo2):
         winners = []
@@ -45,36 +47,35 @@ class Replacement(object):
         desempenop2 = padre2.fitness
         desempenoh1 = hijo1.fitness
         desempenoh2 = hijo2.fitness
+        
+        #de acuerdo a los desempenos, se deja al mejor padre como jugadorA, el mejor hijo como jugadorB, el peor padre como jugadorC, y el peor hijo como jugadorD
         if desempenop1 >= desempenop2:
             if desempenoh1 >= desempenoh2:
-                jugadora = (padre1)
-                jugadorb = (hijo1)
-                jugadorc = (padre2)
-                jugadord = (hijo2)
+                jugadorA = (padre1)
+                jugadorB = (hijo1)
+                jugadorC = (padre2)
+                jugadorD = (hijo2)
             else:
-                jugadora = (padre1)
-                jugadorb = (hijo2)
-                jugadorc = (padre2)
-                jugadord = (hijo1)
+                jugadorA = (padre1)
+                jugadorB = (hijo2)
+                jugadorC = (padre2)
+                jugadorD = (hijo1)
         else:
             if desempenoh1 >= desempenoh2:
-                jugadora = (padre2)
-                jugadorb = (hijo1)
-                jugadorc = (padre1)
-                jugadord = (hijo2)
+                jugadorA = (padre2)
+                jugadorB = (hijo1)
+                jugadorC = (padre1)
+                jugadorD = (hijo2)
             else:
-                jugadora = (padre2)
-                jugadorb = (hijo2)
-                jugadorc = (padre1)
-                jugadord = (hijo1)
+                jugadorA = (padre2)
+                jugadorB = (hijo2)
+                jugadorC = (padre1)
+                jugadorD = (hijo1)
             
-        ganador1 = ruleta(jugadora,jugadorb)
-        ganador2 = ruleta(jugadorc,jugadord)
+        ganador1 = ruleta(jugadora,jugadorb) #se enfrentan el mejor padre y el mejor hijo
+        ganador2 = ruleta(jugadorc,jugadord) #se enfrentan el peor padre y el peor hijo
         
-        winners.append(ganador1)
-        winners.append(ganador2)
+        siguienteGeneracion.append(ganador1) #se agrega el ganador de la primera ruleta
+        siguienteGeneracion.append(ganador2) #se agrega el ganador de la segunda ruleta
         
-        return winners
-    
-    
-    
+        return siguienteGeneracion

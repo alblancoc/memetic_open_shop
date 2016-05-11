@@ -4,32 +4,30 @@ Created on Apr 26, 2016
 @author: carlosandressierra
 '''
 
-class Individual(object):
+class Individuo(object):
     '''
     classdocs
     '''
     
-    def __init__(self, genotype, fitness):
+    def __init__(self, genotipo, fitness):
         '''
         Constructor
         '''
-        self.genotype = genotype
-        self.fenotype = genotype
+        self.genotipo = genotipo
+        self.fenotipo = genotipo
         self.fitness = fitness
         
-    def obtainFenotype(self):
-        return self.fenotype
+    def obtenerFenotipo(self):
+        return self.fenotipo
     
-    def obtainGenotype(self):
-        return self.genotype
+    def obtenerGenotipo(self):
+        return self.genotipo
     
-    def defineFitness(self, fitness):
+    def definirFitness(self, fitness):
         self.fitness = fitness
         
-    def obtainFitness(self):
+    def obtenerFitness(self):
         return self.fitness
     
-    
     def __repr__(self, *args, **kwargs):
-        return ("Genotype = " + self.genotype + "\tFitness = " + self.fitness) 
-        
+        return ("Genotype = " + self.genotype + "\tFitness = " + self.fitness)
