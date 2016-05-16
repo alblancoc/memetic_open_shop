@@ -1,377 +1,138 @@
 '''
 Created on Apr 26, 2016
 
-@author: carlosandressierra
+@author: Angie Blanco
 '''
+import sys
+from time import sleep
 
 class FuncionFitness(object):
     '''
     classdocs
     '''
     
-    def __init__(self):
+    def __init__(self, maquinas, trabajos, archivo_tiempos):
         '''
         Constructor
+        with open('C:/path/numbers.txt') as f:
+    lines = f.read().splitlines()
         '''
+        self.maquinas = maquinas #cantidad de maquinas
+        self.trabajos = trabajos #cantidad de trabajos 
+        self.tareas = [] #vector de tareas definido por trabajos y maquinas
+        self.tabla_tiempos = [] #tabla de tiempos
         
-    def calcularFitness(self):
-        return 10
+        self.tabla_tiempos.append( [34,2,54,61 ] )
+        self.tabla_tiempos.append( [15,89,70,9 ] )
+        self.tabla_tiempos.append( [38,19,28,87] )
+        self.tabla_tiempos.append( [95,7,34,29] )
         
-        
- '''
- import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-
-
-public class FitnessFunction 
-{
-    //Time table
-    private int[][] times_table = null; 
-    
-    private int j, m;
-    
-    private int[][] tasks = null;
-    
-    /**
-     * Constructor with data set path
-     * @param file
-     */
-    public FitnessFunction(int machines, int jobs, String file)
-    {
-        this.times_table = new int[jobs][machines];
-        
-        this.m = machines;
-        this.j = jobs;
-        
-        BufferedReader brBackground;
-        String[] lineBackground;
-        String line = "";
-        
-        try 
-        {
-            brBackground = new BufferedReader(new FileReader( file ));
-            line = brBackground.readLine();
-            
-            int row = 0;    //Initial row of times times
-            
-            while(line != null) 
-            {
-                lineBackground = line.split(" ");
+        try:     
+            #with open(archivo_tiempos, "r") as entrada:
+             #   contenido = entrada.readlines()
                 
-                for(int i = 0; i < machines; i++)
-                {
-                    times_table[row][i] = Integer.parseInt( lineBackground[i] );
-                }
+            print "leer de archivo"
+        except:
+            print "ERROR. No se puede crear el archivo de salida"
+            sys.exit(0)
+            
+    
+    
+    '''
+     Funcion utilizaxada para definir el vector de tareas en terminos de trabajo y maquina
+    '''    
+    def iniciar(self, individuo):
+        #se inicializa el vector de tareas con respecto a la cantidad de tareas en el cromosoma del individuo
+        for i in range(self.trabajos * self.maquinas):
+            self.tareas.append( [] )
+        
+        for i in range( len( individuo ) ): #cada tarea se guarga en un vector de dos posiciones: trabajo y maquina
+            trabajo = (individuo[i] - 1) / self.trabajos; #se obtiene el trabajo correspondiente a la tarea
+            maquina = (individuo[i] - 1) % self.maquinas; #se obtiene la ,aquina correspondiente a la tarea
+            
+            self.tareas[i].append( trabajo ); #se agrega el trabajo a la tarra correspondiente
+            self.tareas[i].append( maquina ); #se agrega la maquin a la tarea correspondiente
+    
+    
+    '''
+     se utiliza para definir cual es el siguiente tiempo en el cual ocurre un evento importante. 
+    Se utiliza como parametro el vector de tiempos de terminacion de tareas en las maquinas
+    '''
+    def siguiente_tiempo(self, tiempos):
+        tiempo = 0
+        
+        for i in range( len(tiempos) ): #se recorre el vector de tiempos de las maquinas
+            if tiempos[i] != 0: #se tienen en cuenta los tiempos que son diferentes de cero, puesto que son donde las maquinas van a quedar libres si estan ocupadas
+                tiempo = tiempos[i] if tiempo == 0 else (tiempos[i] if tiempos[i] < tiempo else tiempo) #se verifica si hay un tiempo mayor a cero, y de ser asi se coloca el minimo tiempo diferente de certo en el vector de tiempos
+            
+        return tiempo
+    
+    
+    '''
+    funcion para calcular el makespan simulando el sistema open-shop. Tiene como parametro el individuo
+    '''
+    def calcularFitness(self, individuo):
+        self.tareas = [] #se inicializa el vector de tareas
+        self.iniciar(individuo) #se asignan las tareas de acuerdo al orden de operaciones definido en el individuo
+        
+        tiempo_final = [0 for i in range(self.maquinas)] #se inicializa el vector de tiempos de maquinas en 0
+        trabajos_proceso = [False for i in range(self.trabajos)] #se define un vector para saber si cada proceso tiene una tarea en ejecucion (True) o no (False)
+        maquinas_procesando = [(-1) for i in range(self.maquinas)] #se define un vector para saber si la maquina esta procesando una tarea (numero del proceso) o no (-1)
+        
+        tareas_terminadas = 0 #cantidad de tareas terminadas
+        tiempo = 1 #tiempo inicial de la simulacion
+        total_tareas = self.maquinas * self.trabajos #se define la cantidad total de tareas a procesar como la multiplicacion de trabajos por maquinas
+        
+        while tareas_terminadas < total_tareas: #mientras no se hayan procesado todas las tareas
+            
+            #como se debe respetar la presedencia en las tareas, se marcan los trabajos y maquinas de tareas que no pueden ser procesadas por alguna restriccion, para que no se asignen tareas mas adelante en el cromosoma
+            # 0 para maquinas o trabajos pasados, 0 para maquinas o trabajos validas para asignar la tarea
+            maquinas_pasadas = [0 for i in range( self.maquinas )] #se usa un vector para marcar las maquinas que estan presentes en tareas que no se pueden procesar
+            trabajos_pasados  = [0 for i in range( self.trabajos )] #se usa un vector para marcar los trabajos que estan presentes en tareas que no se pueden procesar
+            
+            #se revisa si alguna tarea fue terminada
+            terminada = False
+            
+            for i in range(self.maquinas): #se pregunta en cada una de las maquinas
+                if maquinas_procesando[i] == (-1): #se verifica que la maquina este disponible
                     
-                row++;
-                line = brBackground.readLine();
-            }
-        } 
-        catch (FileNotFoundException e) 
-        {
-            e.printStackTrace();
-        } 
-        catch (IOException e) 
-        {
-            e.printStackTrace();
-        }
-    }
-    
-    
-    /**
-     * 
-     * @param individual
-     */
-    public void start(int[] individual) 
-    {
-        this.tasks = new int[j * m][2];
-        int machine, job;
-        
-        for(int i = 0; i < individual.length; i++)
-        {
-            job = (individual[i] - 1) / j;
-            machine = (individual[i] - 1) % m;
-            
-            tasks[i][0] = job;
-            tasks[i][1] = machine;
-        } 
-    }
-
-    
-    
-    /**
-     * This method return fitness of a permutation with sequence of machines per job
-     * @param individual
-     * @return fitness of individual
-     */
-    public int calculateFitness_orderMachines(int[] individual)
-    {
-        this.start(individual);
-        
-        int[] time_finish = null;
-        int[] machines = null;
-        boolean[] jobs = null;
-        
-        time_finish = new int[m];
-        
-        machines = new int[m];
-        jobs = new boolean[j];
-        
-        
-        for(int i = 0; i < machines.length; i++)
-        {
-            machines[i] = -1;
-            jobs[i] = false;
-        }
-        
-        
-        int tasks_finished = 0;
-        int time = 0;
-        
-        while(tasks_finished < (m * j))
-        {
-            for(int i = 0; i < machines.length; i++)
-            {
-                int[] passed = new int[j];
-                
-                if(machines[i] == -1)
-                {
-                    for(int k = 0; k < this.tasks.length; k++)
-                    {
-                        if(this.tasks[k][1] == i)
-                        {
-                            if( !jobs[ this.tasks[k][0] ] && passed[this.tasks[k][0]] != -1)
-                            {
-                                machines[i] = this.tasks[k][0];
-                                jobs[ this.tasks[k][0] ] = true;
-                                time_finish[i] = time + this.times_table[ this.tasks[k][0] ][ i ];
-                                this.tasks[k][0] = this.tasks[k][1] = -2;
-                                
-                                break;
-                            }
-                        }
+                    trabajos_pasados  = [0 for j in range( self.trabajos )] #al comenzar a preguntar por tareas disponibles, se inicialica el vector de trabajos para marcar
+                    
+                    if maquinas_pasadas[i] == 0: #si la maquina no ha sido marcada por presedencia de tareas, se puede buscar una tarea a asignar
                         
-                        if(this.tasks[k][0] >= 0)
-                            passed[this.tasks[k][0]] = -1;
-                    }
-                }
-                else
-                {
-                    if(time_finish[i] == time)
-                    {
-                        jobs[ machines[i] ] = false;
-                        machines[i] = -1;
-                        tasks_finished++;
-                        i--;
-                    }
-                }
-            }
-            
-            time++;
-        }
-        
-        return (time - 1);
-    }
-    
-    
-    /**
-     * 
-     * @param individual
-     */
-    public void start_jobs(int[] individual) 
-    {
-        this.tasks = new int[j * m][2];
-        int machine, job;
-        
-        for(int i = 0; i < individual.length; i++)
-        {
-            machine = (individual[i] - 1) / m;
-            job = (individual[i] - 1) % j;
-            
-            tasks[i][0] = job;
-            tasks[i][1] = machine;
-        } 
-    }
-    
-    
-    /**
-     * This method return fitness of a permutation with sequence of jobs per machine
-     * @param individual
-     * @return fitness of individual
-     */
-    public int calculateFitness_orderJobs(int[] individual)
-    {
-        this.start_jobs(individual);
-        
-        int[] time_finish = null;
-        int[] jobs = null;
-        boolean[] machines = null;
-        
-        time_finish = new int[m];
-        
-        machines = new boolean[m];
-        jobs = new int[j];
-        
-        
-        for(int i = 0; i < machines.length; i++)
-        {
-            machines[i] = false;    
-            jobs[i] = -1;
-        }
-        
-        
-        int tasks_finished = 0;
-        int time = 0;
-        
-        while(tasks_finished < (m * j))
-        {
-            for(int i = 0; i < jobs.length; i++)
-            {
-                int[] passed = new int[j];
-                
-                if(jobs[i] == -1)
-                {
-                    for(int k = 0; k < this.tasks.length; k++)
-                    {
-                        if(this.tasks[k][1] == i)
-                        {
-                            if( !machines[ this.tasks[k][0] ] && passed[this.tasks[k][0]] != -1)
-                            {
-                                jobs[i] = this.tasks[k][0];
-                                machines[ this.tasks[k][0] ] = true;
-                                time_finish[i] = time + this.times_table[ this.tasks[k][1] ][ this.tasks[k][0] ];
-                                this.tasks[k][0] = this.tasks[k][1] = -2;
+                        for k in range(total_tareas): #se recorren todo el vector de tareas
+                            if self.tareas[k][0] >= 0: #se verifica si las tareas no han sido procesadas. Las tareas procesadas se marcan con -2 en el vector.
                                 
-                                break;
-                            }
-                        }
-                        
-                        if(this.tasks[k][0] >= 0)
-                            passed[this.tasks[k][0]] = -1;
-                    }
-                }
-                else
-                {
-                    if(time_finish[i] == time)
-                    {
-                        machines[ jobs[i] ] = false;
-                        jobs[i] = -1;
-                        tasks_finished++;
-                        i--;
-                    }
-                }
-            }
-            
-            time++;
-        }
-        
-        return (time - 1);
-    }
-    
-    
-    
-    /**
-     * This method return fitness of a permutation with sequence of jobs per machine
-     * @param individual
-     * @return fitness of individual
-     */
-    public int calculateFitness_identicalMachine(int[] individual)
-    {
-        this.start(individual);
-        
-        int[] time_finish = null;
-        int[] machines = null;
-        boolean[] jobs = null;
-        
-        time_finish = new int[m];
-        
-        machines = new int[m];
-        jobs = new boolean[j];
-        
-        
-        for(int i = 0; i < machines.length; i++)
-        {
-            machines[i] = -1;
-            jobs[i] = false;
-        }
-        
-        
-        int tasks_finished = 0;
-        int time = 0;
-        
-        while(tasks_finished < (m * j))
-        {
-            for(int i = 0; i < machines.length; i++)
-            {
-                int[] passed = new int[j];
-                
-                if(machines[i] == -1)
-                {
-                    for(int k = 0; k < this.tasks.length; k++)
-                    {
-                        if(this.tasks[k][1] == i)
-                        {
-                            if( !jobs[ this.tasks[k][0] ] && passed[this.tasks[k][0]] != -1)
-                            {
-                                machines[i] = this.tasks[k][0];
-                                jobs[ this.tasks[k][0] ] = true;
-                                time_finish[i] = time + this.times_table[ this.tasks[k][0] ][ i ];
-                                this.tasks[k][0] = this.tasks[k][1] = -2;
+                                if self.tareas[k][1] == i: #se verifica que si la tarea k corresponde a la maquina i
+                                    if (not trabajos_proceso[ self.tareas[k][0] ]) and trabajos_pasados[ self.tareas[k][0] ] == 0: #se verifica si el trabajo esta disponible
+                                        #se asigna la tarea 
+                                        maquinas_procesando[i] = self.tareas[k][0] #se define en la maquina el trabajo que se esta realizando a partir de la tarea asignada
+                                        trabajos_proceso[ maquinas_procesando[i] ] = True #se marca el trabajo como en proceso de alguna de sus tareas
+                                        
+                                        tiempo_final[i] = tiempo + self.tabla_tiempos[ self.tareas[k][0] ][ self.tareas[k][1] ] - 1 #se asigna el tiempo de terminacion de la tarea en la maquina
+                                        self.tareas[k][0] = self.tareas[k][1] = -2 # -1 es marca para las maquinas, -2 para las tareas ya procesadas
+                                        break #como ya se asigno una tarea ya no se necesita buscar en mas
+                                    else:
+                                        maquinas_pasadas[i] = 1 #aunque la tarea corresponde a la maquina i, por alguna restriccion no puede ser asignada. entonces, se marca la maquina por presedencia pra no asignar alguna tarea posterior en el cromosoma
+                                        break #al marcar la maquina ya no se hace necesario buscar asignar alguna tarea
                                 
-                                break;
-                            }
-                        }
+                                trabajos_pasados[ self.tareas[k][0] ] = 1 #se marca el trabajo como con alguna tarea en presedencia, para no asignar tareas posterior en el cromosoma
+                                
+                                if sum(maquinas_pasadas) == self.maquinas or sum(trabajos_pasados) == self.trabajos: #se verifica si ya todas las maquinas o trabajos estan marcados pro presedencias
+                                    break #al estar todos los trabajos y maquinas con presedencias, ya no se pueden asignar tareas, por lo que se termina el ciclo
+                    else:
+                        break #si la maquina esta marcada por presedencias no se le puede asignar tarea
+                else:
+                    
+                    if tiempo_final[i] == tiempo: #se verifica si el tiempo de finalizacion de procesamiento de la maquina i es el actual
+                        trabajos_proceso[ maquinas_procesando[i] ] = False #el trabajo que estaba siendo procesado ahora se marco como NO en procesamiento, para que puedan asignarse sus tareas
+                        maquinas_procesando[i] = (-1) #se marca la maquina como disponible
+                        tareas_terminadas += 1 #se aumenta en uno la cantidad de tareas terminadas
+                        tiempo_final[i] = 0  #se deja la maquina sin tiempo de finalizacion de procesamiento, puesto que no tiene ninguna tarea asignada
+                        terminada = True #se define que si hubo una tarea terminada en este momento del tiempo
                         
-                        if(this.tasks[k][0] >= 0)
-                            passed[this.tasks[k][0]] = -1;
-                    }
-                }
-                else
-                {
-                    if(time_finish[i] == time)
-                    {
-                        jobs[ machines[i] ] = false;
-                        machines[i] = -1;
-                        tasks_finished++;
-                        i--;
-                    }
-                }
-            }
-            
-            time++;
-        }
+            #si hubo tarea terminada, se aumenta en una unidad el tiempo para procurar asignar alguna tarea factible, de lo contrario se busca el siguiente tiempo de terminacion de procesamiento de una tarea    
+            tiempo = tiempo + 1 if terminada else self.siguiente_tiempo ( tiempo_final ) 
         
-        return (time - 1);
-    }
-    
-    
-    public void printTable()
-    {
-        for(int i = 0; i < this.times_table.length; i++)
-        {
-            for(int j = 0; j < this.times_table.length; j++)
-            {
-                System.out.print(times_table[i][j] + "\t");
-            }
-            ystem.out.println();
-        }
-    }
-    
-    
-    public static void main(String args[])
-    {
-        int machines = Integer.parseInt( args[0] );
-        String file = args[1];
-        
-        FitnessFunction fitness = new FitnessFunction(machines, machines, file);
-        
-        int[] individual = {6, 2, 20, 14, 13, 16, 12, 9, 10, 8, 1, 24, 25, 23, 22, 5, 11, 7, 19, 18, 4, 21, 17, 15, 3};
-        
-        System.out.println(fitness.calculateFitness_orderJobs(individual));
-    }
-    
-}
-            '''     
-      
+        #se retorna el tiempo final de la simulacion                
+        return tiempo + 1

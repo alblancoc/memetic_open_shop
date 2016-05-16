@@ -1,14 +1,14 @@
 '''
 Created on Apr 26, 2016
 
-@author: carlosandressierra
+@author: Angie Blanco
 '''
 
 class Poblacion(object):
+   
     '''
     classdocs
     '''
-    
     def __init__(self, tamano, iteraciones, maquinas, entrada):
         '''
         Constructor

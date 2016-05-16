@@ -1,21 +1,23 @@
 '''
 Created on Apr 26, 2016
 
-@author: carlosandressierra
+@author: Angie Blanco
 '''
 from random import random
 
 class Reemplazo(object):
+    
     '''
     classdocs
     '''
-    
     def __init__(self):
         '''
         Constructor
         '''
     
-    #Estrategia de reemplazo generacional
+    '''
+    'Estrategia de reemplazo generacional
+    '''
     def generacional(self, padre1, padre2, hijo1, hijo2):
         siguienteGeneracion = []
         siguienteGeneracion.append(hijo1) #pasa el hijo 1
@@ -24,8 +26,9 @@ class Reemplazo(object):
         return siguienteGeneracion
     
     
-    
-    #Estrategia de ruleta para definir el ganador entre dos individuos de acuerdo a su fitness
+    '''
+    Estrategia de ruleta para definir el ganador entre dos individuos de acuerdo a su fitness
+    '''
     def ruleta(self, jugador1, jugador2):
         total = ( jugador1.fitness + jugador2.fitness ) #se suma el desempeno de los dos individuos, para normalizar la ruleta
         
@@ -40,7 +43,8 @@ class Reemplazo(object):
         return ganador
     
     
-    
+    '''
+    '''
     def steadyState(self, padre1, padre2, hijo1, hijo2):
         winners = []
         desempenop1 = padre1.fitness 

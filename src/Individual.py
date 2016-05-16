@@ -1,7 +1,7 @@
 '''
 Created on Apr 26, 2016
 
-@author: carlosandressierra
+@author: Angie Blanco
 '''
 
 class Individuo(object):
