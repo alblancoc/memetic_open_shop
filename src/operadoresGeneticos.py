@@ -46,7 +46,7 @@ class OperadoresGeneticos(object):
     
     
     #Metodo para aplicar el operador genetico de cruce 2-edge 
-    def crossover(self, padre1, padre2):
+    def edge2Crossover(self, padre1, padre2):
         tamano = len( padre1 )
         hijos = []
         tabla = [];
@@ -145,7 +145,7 @@ class OperadoresGeneticos(object):
     
    
    
-
+'''
 operadores = OperadoresGeneticos()
 fat1 = [1,2,3,4,5,6,7,8,9]
 fat2 = [1,3,5,7,9,8,6,4,2]
@@ -164,3 +164,4 @@ sons = operadores.crossover(sons[0], sons[1])
 print "Cross 1"
 print sons[0]
 print sons[1]
+'''

@@ -30,4 +30,4 @@ class Individuo(object):
         return self.fitness
     
     def __repr__(self, *args, **kwargs):
-        return ("Genotype = " + self.genotype + "\tFitness = " + self.fitness)
+        return (self.genotype + "," + self.fitness)

@@ -10,11 +10,20 @@ class Reemplazo(object):
     '''
     classdocs
     '''
-    def __init__(self):
+    def __init__(self, generacional):
         '''
         Constructor
         '''
-    
+        self.mecanismo = generacional
+
+        
+    def realizarReemplazo(self, padre1, padre2, hijo1, hijo2):
+        if self.mecanismo:
+            return self.generacional(padre1, padre2, hijo1, hijo2)
+        else:
+            return self.steadyState(padre1, padre2, hijo1, hijo2)
+        
+        
     '''
     'Estrategia de reemplazo generacional
     '''
