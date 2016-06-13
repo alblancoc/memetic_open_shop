@@ -27,7 +27,7 @@ class Individuo(object):
         self.fitness = fitness
         
     def obtenerFitness(self):
-        return self.fitness
+        return int(self.fitness)
     
     def __repr__(self, *args, **kwargs):
-        return (self.genotype + "," + self.fitness)
+        return ( str( self.genotipo ) + ", " + str( self.fitness ))

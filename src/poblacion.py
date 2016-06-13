@@ -4,6 +4,7 @@ from Replacement import Reemplazo
 from Individual import Individuo
 from random import randint
 from random import random
+from random import shuffle
 
 '''
 Created on Apr 26, 2016
@@ -31,13 +32,17 @@ class Poblacion(object):
         
         self.log = ""
         self.operadores = OperadoresGeneticos()
+        
         print "||---------- MAOS ----------|| \n\n Initializing algorithm..."
         
         print "Building initial population..."
         self.poblacionInicial()
         
-        print "Start genetic algorithm...\n"
+        print "Start genetic algorithm..."
         self.generaciones()
+        
+        self.log += (",%.2f,") % self.fitnessPromedio()
+        self.log += "" + str ( self.imprimirMejorIndividuo() )
         
         
         
@@ -49,9 +54,11 @@ class Poblacion(object):
         for x in range(self.tamano):
             individuo = [(i + 1) for i in range(self.maquinas * self.trabajos)]
             shuffle(individuo)
-            self.poblacion.append( individuo )
+            nuevoIndividuo = Individuo(individuo, self.funcionFitness.calcularFitness( individuo )  ) 
+            self.poblacion.append( nuevoIndividuo )
             
-        self.log += self.fitnessPromedio + "," + self.imprimirMejorIndividuo() + ","
+        self.log += ("%.2f,") % self.fitnessPromedio()
+        self.log += "" + str ( self.imprimirMejorIndividuo() ) 
         
         #TODO invocar heuristica
         
@@ -69,25 +76,27 @@ class Poblacion(object):
         
         candidatos_nuevos = []
         
-        
         for i in range( self.iteraciones ):
             nueva_generacion = []
             
             for j in range(self.tamano / 2):
+                
                 if self.uniforme:
                     padres = self.seleccionUniforme()
                 else:
                     padres = self.seleccionTorneo()
                 
-                if random < 0.5:
-                    hijos_cromosoma = self.operadores.swapMutation(padres[0], padres[1])
+                if random < 0.3:
+                    hijos_cromosoma = self.operadores.swapMutation(padres[0].obtenerGenotipo(), padres[1].obtenerGenotipo())
                 else:
-                    hijos_cromosoma = self.operadores.egde2Crossover(padres[0], padres[1])
-                    
+                    hijos_cromosoma = self.operadores.edge2Crossover(padres[0].obtenerGenotipo(), padres[1].obtenerGenotipo())
+                 
+                hijos = []    
                 hijos.append( Individuo( hijos_cromosoma[0], self.funcionFitness.calcularFitness( hijos_cromosoma[0] ) ) )
                 hijos.append( Individuo( hijos_cromosoma[1], self.funcionFitness.calcularFitness( hijos_cromosoma[1] ) ) )
     
                 candidatos_nuevos = self.mecanismoReemplazo.realizarReemplazo(padres[0], padres[1], hijos[0], hijos[1])
+                
                 nueva_generacion.append( candidatos_nuevos[0] )
                 nueva_generacion.append( candidatos_nuevos[1] )
                 
@@ -169,7 +178,7 @@ class Poblacion(object):
         padre2 = randint(0, self.tamano - 1)
             
         while (padre1 == padre2):
-            padre2 = randint(0, tamano - 1)
+            padre2 = randint(0, self.tamano - 1)
         
         padres.append( self.poblacion[padre1] )
         padres.append( self.poblacion[padre2] )
@@ -188,27 +197,27 @@ class Poblacion(object):
         participante3 = randint(0, self.tamano - 1)
         participante4 = randint(0, self.tamano - 1)
         
-        padre1 = ruleta( self.poblacion[participante1], self.poblacion[participante2])
-        padre2 = ruleta( self.poblacion[participante3], self.poblacion[participante4])
-        padres.append( ruleta(padre1, padre2) )
+        padre1 = self.ruleta( self.poblacion[participante1], self.poblacion[participante2])
+        padre2 = self.ruleta( self.poblacion[participante3], self.poblacion[participante4])
+        padres.append( self.ruleta(padre1, padre2) )
     
         participante1 = randint(0, self.tamano - 1)
         participante2 = randint(0, self.tamano - 1)
         participante3 = randint(0, self.tamano - 1)
         participante4 = randint(0, self.tamano - 1)
         
-        padre1 = ruleta( self.poblacion[participante1], self.poblacion[participante2])
-        padre2 = ruleta( self.poblacion[participante3], self.poblacion[participante4])
-        padres.append( ruleta(padre1, padre2) )
-    
+        padre1 = self.ruleta( self.poblacion[participante1], self.poblacion[participante2])
+        padre2 = self.ruleta( self.poblacion[participante3], self.poblacion[participante4])
+        padres.append( self.ruleta(padre1, padre2) )
+        
         return padres 
     
     
     '''
     '''
     def ruleta(self, jugador1, jugador2):
-        total = (jugador1.obtenerDesempeno + jugador2.obtenerDesempeno)
-        punto = 1 - (jugador1.obtenerDesempeno /total)
+        total = (jugador1.obtenerFitness() + jugador2.obtenerFitness())
+        punto = 1 - (jugador1.obtenerFitness() /total)
         aleatorio = random()
         if punto >= aleatorio:
             ganador = jugador1
@@ -221,7 +230,15 @@ class Poblacion(object):
     '''
     '''
     def fitnessPromedio(self):
-        print "promedio"
+        fitnessProm = 0
+        
+        for individuo in  self.poblacion:
+            fitnessProm += individuo.obtenerFitness()
+        
+        fitnessProm /= self.tamano
+        
+        return fitnessProm
+        
     
     '''
     '''    
@@ -230,9 +247,9 @@ class Poblacion(object):
         fitness = self.poblacion[indice].obtenerFitness()
         
         for i in range(1, self.tamano, 1):
-            if self.population[i].obtenerFitness() < fitness:
+            if self.poblacion[i].obtenerFitness() < fitness:
                 indice = i
-                fitness = self.population[i].obtenerFitness()
+                fitness = self.poblacion[i].obtenerFitness()
         
         return indice
     
@@ -240,4 +257,8 @@ class Poblacion(object):
     '''    
     def imprimirMejorIndividuo(self):
         indice = self.mejorIndividuo()
-        return self.poblacion[indice]        
+        return self.poblacion[indice]    
+    
+    
+    def generarLog(self):
+        return self.log 

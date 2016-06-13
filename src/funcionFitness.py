@@ -4,7 +4,7 @@ Created on Apr 26, 2016
 @author: Angie Blanco
 '''
 import sys
-from time import sleep
+import time
 
 class FuncionFitness(object):
     '''
@@ -14,29 +14,26 @@ class FuncionFitness(object):
     def __init__(self, maquinas, trabajos, archivo_tiempos):
         '''
         Constructor
-        with open('C:/path/numbers.txt') as f:
-    lines = f.read().splitlines()
         '''
         self.maquinas = maquinas #cantidad de maquinas
         self.trabajos = trabajos #cantidad de trabajos 
         self.tareas = [] #vector de tareas definido por trabajos y maquinas
         self.tabla_tiempos = [] #tabla de tiempos
         
-        self.tabla_tiempos.append( [34,2,54,61 ] )
-        self.tabla_tiempos.append( [15,89,70,9 ] )
-        self.tabla_tiempos.append( [38,19,28,87] )
-        self.tabla_tiempos.append( [95,7,34,29] )
-        
-        try:     
-            #with open(archivo_tiempos, "r") as entrada:
-             #   contenido = entrada.readlines()
-                
-            print "leer de archivo"
-        except:
-            print "ERROR. No se puede crear el archivo de salida"
-            sys.exit(0)
+        with open(archivo_tiempos, "r") as tiempos:
+            content = tiempos.readlines() #Add all the content to a list, where each line will be an element of the list
+
+        for line in content:
+            line = line.replace(' \n', '').split(" ")
             
-    
+            line_ = []
+            for n in line:
+                line_.append(int(n)) 
+            
+            self.tabla_tiempos.append(line_)
+            
+
+
     
     '''
      Funcion utilizaxada para definir el vector de tareas en terminos de trabajo y maquina
@@ -88,7 +85,7 @@ class FuncionFitness(object):
             #como se debe respetar la presedencia en las tareas, se marcan los trabajos y maquinas de tareas que no pueden ser procesadas por alguna restriccion, para que no se asignen tareas mas adelante en el cromosoma
             # 0 para maquinas o trabajos pasados, 0 para maquinas o trabajos validas para asignar la tarea
             maquinas_pasadas = [0 for i in range( self.maquinas )] #se usa un vector para marcar las maquinas que estan presentes en tareas que no se pueden procesar
-            trabajos_pasados  = [0 for i in range( self.trabajos )] #se usa un vector para marcar los trabajos que estan presentes en tareas que no se pueden procesar
+            #trabajos_pasados  = [0 for i in range( self.trabajos )] #se usa un vector para marcar los trabajos que estan presentes en tareas que no se pueden procesar
             
             #se revisa si alguna tarea fue terminada
             terminada = False
@@ -136,3 +133,16 @@ class FuncionFitness(object):
         
         #se retorna el tiempo final de la simulacion                
         return tiempo + 1
+    
+''' 
+tiempo_inicio = time.time() 
+
+file = raw_input()
+
+fitness = FuncionFitness(4, 4, file)
+individual = [9, 3, 13, 15, 8, 10, 5, 2, 7, 16, 12, 4, 14, 11, 1, 6]
+print fitness.tabla_tiempos
+tiempo_total = time.time() - tiempo_inicio
+print fitness.calcularFitness(individual)
+print tiempo_total
+'''

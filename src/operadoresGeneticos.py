@@ -160,7 +160,7 @@ print "Mutation 2"
 print sons[0]
 print sons[1]
 
-sons = operadores.crossover(sons[0], sons[1])
+sons = operadores.edge2Crossover(sons[0], sons[1])
 print "Cross 1"
 print sons[0]
 print sons[1]
