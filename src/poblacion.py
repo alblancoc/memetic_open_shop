@@ -1,7 +1,7 @@
 from funcionFitness import FuncionFitness
 from operadoresGeneticos import OperadoresGeneticos
-from Replacement import Reemplazo
-from Individual import Individuo
+from reemplazo import Reemplazo
+from individuo import Individuo
 from random import randint
 from random import random
 from random import shuffle
@@ -17,7 +17,7 @@ class Poblacion(object):
     '''
     classdocs
     '''
-    def __init__(self, tamano, iteraciones, maquinas, trabajos, entrada, uniforme, generacional):
+    def __init__(self, tamano, iteraciones, maquinas, trabajos, entrada, uniforme, generacional, heuristica):
         self.poblacion = []
         
         self.tamano = tamano
@@ -36,7 +36,7 @@ class Poblacion(object):
         print "||---------- MAOS ----------|| \n\n Initializing algorithm..."
         
         print "Building initial population..."
-        self.poblacionInicial()
+        self.poblacionInicial(heuristica)
         
         print "Start genetic algorithm..."
         self.generaciones()
@@ -50,8 +50,8 @@ class Poblacion(object):
     Esta funcion se utiliza para crear la poblacion inicial de manera aleatoria.
     Si el usuario lo escoge, se puede aplicar la heuristica de mejora inicial.
     '''
-    def poblacionInicial(self):
-        for x in range(self.tamano):
+    def poblacionInicial(self, heuristica):
+        for contador in range(self.tamano):
             individuo = [(i + 1) for i in range(self.maquinas * self.trabajos)]
             shuffle(individuo)
             nuevoIndividuo = Individuo(individuo, self.funcionFitness.calcularFitness( individuo )  ) 
@@ -60,7 +60,13 @@ class Poblacion(object):
         self.log += ("%.2f,") % self.fitnessPromedio()
         self.log += "" + str ( self.imprimirMejorIndividuo() ) 
         
-        #TODO invocar heuristica
+        if heuristica:
+            for i in range( len( self.poblacion ) ):
+                individuo = self.heuristicaMejoraInicial( self.poblacion[i].obtenerGenotipo() )
+                self.poblacion[i].definirFitness( self.funcionFitness.calcularFitness( individuo ) ) 
+                
+            self.log += (",%.2f,") % self.fitnessPromedio()
+            self.log += "" + str ( self.imprimirMejorIndividuo() )
         
         
     
@@ -105,13 +111,13 @@ class Poblacion(object):
        
     '''
     '''        
-    def trabajo(m):
+    def trabajo(self, m):
         f = int((m - 1) / self.trabajos)
         return f
     
     '''
     '''
-    def maquina(n):
+    def maquina(self, n):
         c = n % self.maquinas 
         return c 
         
@@ -123,14 +129,14 @@ class Poblacion(object):
         total_tareas = self.maquinas * self.trabajos
         
         #/Move over all permutation
-        for tarea in range( total_tareas ): 
-            trabajo_tarea = trabajo( cromosoma[ tarea ] )  #Row from table
-            maquina_tarea = maquina( cromosoma[ tarea ] ) #Column from table
+        for tarea in range( total_tareas - 1 ): 
+            trabajo_tarea = self.trabajo( cromosoma[ tarea ] )  #Row from table
+            maquina_tarea = self.maquina( cromosoma[ tarea ] ) #Column from table
             
-            for tarea_en_grupo in range (i % self.trabajos):
+            for tarea_en_grupo in range (tarea % self.trabajos):
            
-                base = (tarea / self.trabajos);
-                base = (base * self.trabajos) + tarea_en_grupo;
+                base = (tarea / self.trabajos)
+                base = (base * self.trabajos) + tarea_en_grupo
                 
                 trabajo_base = self.trabajo( cromosoma[ base ] )  #Get row
                 maquina_base = self.maquina( cromosoma[ base ] ) #Get column
@@ -156,7 +162,7 @@ class Poblacion(object):
                                 successful = False
                                 break
           
-                        if (not successful) and (ultima_tarea < total_tareas - 1):
+                        if (successful) or (ultima_tarea >= total_tareas - 1):
                             break
                     
                     valor_mover = cromosoma[ ultima_tarea ]
@@ -241,24 +247,42 @@ class Poblacion(object):
         
     
     '''
+    En este metodo se comparan los fitness de todos los individuos y se retorna la posicion en la cual se encuentra el individuo con el mejor fitness
+    @return indice del mejor individuo
     '''    
     def mejorIndividuo(self):
-        indice = 0
-        fitness = self.poblacion[indice].obtenerFitness()
+        indice = 0 #se asume que el primer individuo temporalmente es el mejor
+        fitness = self.poblacion[indice].obtenerFitness() #se toma el fitness del primer individuo como referencia de comparacion
         
-        for i in range(1, self.tamano, 1):
-            if self.poblacion[i].obtenerFitness() < fitness:
-                indice = i
-                fitness = self.poblacion[i].obtenerFitness()
+        for i in range(1, self.tamano, 1): #se recorren todos los individuos de la poblacion despues del primero
+            #se compara el fitness del individuo con el mejor fitness encontrado hasta el momento
+            if self.poblacion[i].obtenerFitness() < fitness:  #si se ha encontrado un mejor fitness
+                indice = i  #se cambia el indice del mejor al individuo que se ha encontrado con mejor fitness
+                fitness = self.poblacion[i].obtenerFitness() #se actualiza el valor de referencia del fitness
         
-        return indice
+        return indice #se retorna el indice del mejor individuo encontrado
+    
     
     '''
+    Este metodo se utiliza para obtener la informacion del mejor individuo en la iteracion en la que se invoque
+    @return mejor individuo
     '''    
     def imprimirMejorIndividuo(self):
-        indice = self.mejorIndividuo()
-        return self.poblacion[indice]    
+        indice = self.mejorIndividuo() #Se busca el indice en el cual esta el mejor individup
+        return self.poblacion[indice] #Se retorna el individuo en el indice encontrado    
     
     
+    '''
+    Este metodo simplemente retorna el log en el que guarda la informacion que se saque de la ejecucion del algoritmo
+    @return log de la ejecucion
+    '''
     def generarLog(self):
-        return self.log 
+        return self.log
+    
+    '''
+poblacion = Poblacion(10, 10, 4, 4, "a_4_1.txt", True, True)
+cromosoma = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
+print cromosoma
+poblacion.heuristicaMejoraInicial(cromosoma)
+print cromosoma
+'''

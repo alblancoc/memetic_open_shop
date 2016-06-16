@@ -1,4 +1,7 @@
 '''
+En esta clase se definen los operadores geneticos que se usaran en el algoritmo genetico. 
+Se define un operador para el cruce y otro para la mutacion.
+
 Created on Apr 26, 2016
 
 @author: Angie Blanco
@@ -7,21 +10,27 @@ import random
 import copy
 
 class OperadoresGeneticos(object):
-    '''
-    classdocs
-    '''
     
+    '''
+    Constructor de la clase
+    '''
     def __init__(self):
         '''
-        Constructor
+        Este constructor no hace nada mas
         '''
+       
         
-    #Metodo para aplicar el operador genetico SwapMutation    
+    '''
+    Este metodo representa la dinamica del operador de mutacion "SwapMutation". Se reciben los padres y se generan los cromosomas de los hijos.
+    @param padre1: Cromosoma del primer padre
+    @param padre2: Cromosoma del segundo padre 
+    @return: cromosomas de los dos hijos resultantes
+    '''    
     def swapMutation(self, padre1, padre2):
-        hijos = []
+        hijos = [] #vector donde se almacenan los hijos
          
         #Se colocan los cromosomas de los padres en los hijos 
-        hijos.append(padre1)
+        hijos.append(padre1) 
         hijos.append(padre2)
         
         #Se generan los puntos de intercambio de forma aleatoria
@@ -32,24 +41,29 @@ class OperadoresGeneticos(object):
         while(primerPunto == segundoPunto):
             segundoPunto = random.randint(0, len(padre1) - 1)
         
-        #Se cambian las tareas en el cromosoma del hijo 1
+        #Se cambian las tareas en el cromosoma del primer hijo (posicion 0)
         valorTemporal = hijos[0][primerPunto]
         hijos[0][primerPunto] = hijos[0][segundoPunto]
         hijos[0][segundoPunto] = valorTemporal
          
-         #Se cambian las tareas en el cromosoma del hijo 2
+         #Se cambian las tareas en el cromosoma del segundo hijo (posicion 1)
         valorTemporal = hijos[1][primerPunto]
         hijos[1][primerPunto] = hijos[1][segundoPunto]
         hijos[1][segundoPunto] = valorTemporal 
         
-        return hijos
+        return hijos #se retornan los cromosomas obtenidos de los hijos
     
     
-    #Metodo para aplicar el operador genetico de cruce 2-edge 
+    '''
+    Este metodo representa la dinamica del operador de cruce "2-edge". Se reciben los padres y se generan los cromosomas de los hijos.
+    @param padre1: Cromosoma del primer padre
+    @param padre2: Cromosoma del segundo padre 
+    @return: cromosomas de los dos hijos resultantes
+    '''  
     def edge2Crossover(self, padre1, padre2):
         tamano = len( padre1 )
         hijos = []
-        tabla = [];
+        tabla = []
         
         #se inicializa la tabla que va a almacenas las adyacencias
         for i in range(tamano):
@@ -80,7 +94,7 @@ class OperadoresGeneticos(object):
                 tabla[ padre2[i] - 1 ].append(temporal)
             
             temporal = padre2[ (i - 1 + tamano) % tamano ]  #se mira la tarea adyacente hacia atras del indice i
-            encontrado = False
+            encontrado = False #inicialmente se asume que no existe una adyacencia, y cuando se encuentra se desencadenan las reglas de marcacion logica
             
             for j in range( len( tabla[padre2[i] - 1] )): 
                 if tabla[ padre2[i] - 1][j] == temporal: #si hay una adyacencia en comun, se marca como negativa
@@ -88,37 +102,42 @@ class OperadoresGeneticos(object):
                     cambio = tabla[padre2[i] - 1][j] * (-1)
                     primero = tabla[padre2[i] - 1][0]
                     
+                    #se reorganizan las tareas, de tal manera que las negativas pasen a la primera posicion
                     tabla[ padre2[i] - 1 ][j] = primero
                     tabla[ padre2[i] - 1 ][0] = cambio
+            
             
             if not encontrado: #si no esta la adyacencia en comun, se agrega la tarea a la tabla de adyacencias
                 tabla[ padre2[i] - 1 ].append(temporal)
         
         
-        tabla_ = copy.deepcopy( tabla ) #TODO mejorar clonacion
+        tabla_ = copy.deepcopy( tabla ) #Se hace una copia de la tabla para procesar el hijo 2
         hijos.append( self.crossHijo(tabla, tamano) ) #a partir de la tabla de adyacencias se crea el hijo 1
         hijos.append( self.crossHijo(tabla_, tamano) ) #a partir de la tabla de adyacencias se crea el hijo 2
         
-        return hijos
+        return hijos #se retornan los hijos obtenidos
     
     
-    
-    #Apoyo para el operador 2-edge. Usa la tabla de adyacencias y construye el individuo
+    '''
+    Este metodo es un auxiliar para el operador de cruce 2-edge. En este caso, se recibe la tabla de adyacencias y se crea el cromosoma del hijo.
+    @param tabla: tabla de adyacencias
+    @param tamano: cantidad de tareas en la permutacion
+    @return: cromosoma del nuevo hijo
+    '''
     def crossHijo(self, tabla, tamano):
-        hijo = [None] * tamano
+        hijo = [None] * tamano #se crea el vector donde se almacena el orden de tareas del hijo
         tarea = random.randint(1, len(tabla) ) #Seleccion aleatoria de la primera tarea
         hijo[0] = tarea #se asigna la primera tarea
         indice = 1 #Define la cantidad de tareas agregadas al hijo
         
         #Mientras no se hayan agregado toras las tareas
         while indice < len(tabla):
-            invalido = True
+            invalido = True #por defecto se considera invalido, ya que se busca encontrar el caso donde no lo sea
             
             while (invalido):
-                #TODO remove current task from their adjacent tasks
                 if len( tabla[tarea - 1] ) > 0: #Se revisa si quedan adjacencias
                     if tabla[tarea - 1][0] < 0:  #Si la primera tarea es negativa, se asigna automaticamente
-                        enTabla = 0
+                        enTabla = 0 #al ser negativa, la posicion en la que se encuentra s la inicial
                     else:
                         enTabla = random.randint(0, len( tabla[tarea - 1] ) - 1) #se escoge aleatoriamente de alguna de las tareas en el arreglo
                 
@@ -129,11 +148,11 @@ class OperadoresGeneticos(object):
                     nuevaTarea = random.randint(1, len(tabla))  #Si la tarea ya no tiene mas adyacencias, se busca aleatoriamente una nueva tarea
         
                 for i in range(indice): #Verifica si la tarea ya existe en el arreglo
-                    if nuevaTarea == hijo[i]: #Si ya xiste, hay que repetir el proceso
+                    if nuevaTarea == hijo[i]: #Si ya existe, hay que repetir el proceso
                         invalido = True
                         break
                 else:
-                    invalido = False
+                    invalido = False #no es necesario repetir el proceso
                   
                 
             tarea = nuevaTarea #La tarea seleccionada en la tabla ahora sera la tarea en la cual se busque la adyacencia

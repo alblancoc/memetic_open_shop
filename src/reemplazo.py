@@ -8,15 +8,15 @@ from random import random
 class Reemplazo(object):
     
     '''
-    classdocs
+    Constructor de la clase
+    @param si la estrategia de reemplazo es generacional (True) o Steady-State (False)
     '''
     def __init__(self, generacional):
-        '''
-        Constructor
-        '''
-        self.mecanismo = generacional
+        self.mecanismo = generacional #se determina que mecanismo de reemplazo se va a utilizar
 
         
+    '''
+    '''    
     def realizarReemplazo(self, padre1, padre2, hijo1, hijo2):
         if self.mecanismo:
             return self.generacional(padre1, padre2, hijo1, hijo2)
