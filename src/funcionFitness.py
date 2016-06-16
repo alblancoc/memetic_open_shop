@@ -10,9 +10,9 @@ class FuncionFitness(object):
     
     '''
     Constructor de la clase. Recibe la cantidad de maquinas y trabajos, y el archivo donde se almacena la matriz de tiempos correspondiente
-    @param maquinas
-    @param trabajos
-    @param archivo con matriz de tiempos
+    @param maquinas:
+    @param trabajos:
+    @param archivo_tiempos: con matriz de tiempos
     '''
     def __init__(self, maquinas, trabajos, archivo_tiempos):
         self.maquinas = maquinas #cantidad de maquinas
@@ -35,7 +35,7 @@ class FuncionFitness(object):
     
     '''
      Metodo utilizado para definir el vector de tareas en terminos de trabajo y maquina
-     @param individuo
+     @param individuo:
     '''    
     def iniciar(self, individuo):
         #se inicializa el vector de tareas con respecto a la cantidad de tareas en el cromosoma del individuo
@@ -52,8 +52,8 @@ class FuncionFitness(object):
     
     '''
     Este metodo se utiliza para definir cual es el siguiente tiempo en el cual ocurre un evento importante. 
-    @param Vector de tiempos de terminacion de tareas en las maquinas
-    @return tiempo del siguiente evento en la simulacion
+    @param tiempos: Vector de tiempos de terminacion de tareas en las maquinas
+    @return: tiempo del siguiente evento en la simulacion
     '''
     def siguiente_tiempo(self, tiempos):
         tiempo = 0
@@ -67,8 +67,8 @@ class FuncionFitness(object):
     
     '''
     Metodo para calcular el makespan simulando el sistema open-shop de acuerdo al orden de tareas establecido en el individuo
-    @param individuo
-    @return fitness del individuo
+    @param individuo:
+    @return: fitness del individuo
     '''
     def calcularFitness(self, individuo):
         self.tareas = [] #se inicializa el vector de tareas

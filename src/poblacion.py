@@ -15,7 +15,15 @@ Created on Apr 26, 2016
 class Poblacion(object):
    
     '''
-    classdocs
+    Constructor de la clase
+    @param tamano:
+    @param iteraciones:
+    @param maquinas:
+    @param trabajos:
+    @param entrada:
+    @param uniforme:
+    @param generacional:
+    @param heuristica: 
     '''
     def __init__(self, tamano, iteraciones, maquinas, trabajos, entrada, uniforme, generacional, heuristica):
         self.poblacion = []
@@ -49,6 +57,7 @@ class Poblacion(object):
     '''
     Esta funcion se utiliza para crear la poblacion inicial de manera aleatoria.
     Si el usuario lo escoge, se puede aplicar la heuristica de mejora inicial.
+    @param heuristica:
     '''
     def poblacionInicial(self, heuristica):
         for contador in range(self.tamano):
@@ -108,20 +117,29 @@ class Poblacion(object):
                 
             self.poblacion = None
             self.poblacion = nueva_generacion
+    
        
     '''
+    @param m:
+    @return: 
     '''        
     def trabajo(self, m):
         f = int((m - 1) / self.trabajos)
         return f
     
+    
     '''
+    @param n:
+    @return: 
     '''
     def maquina(self, n):
         c = n % self.maquinas 
         return c 
         
+        
     '''
+    @param cromosoma:
+    @return: 
     '''    
     def heuristicaMejoraInicial(self, cromosoma):
         
@@ -177,6 +195,7 @@ class Poblacion(object):
     
     
     '''
+    @return: 
     '''
     def seleccionUniforme(self):
         padres = []
@@ -193,6 +212,7 @@ class Poblacion(object):
     
     
     '''
+    @return: 
     '''    
     def seleccionTorneo(self):
         padres = []
@@ -220,6 +240,9 @@ class Poblacion(object):
     
     
     '''
+    @param jugador1:
+    @param jugador2:
+    @return: 
     '''
     def ruleta(self, jugador1, jugador2):
         total = (jugador1.obtenerFitness() + jugador2.obtenerFitness())
@@ -248,7 +271,7 @@ class Poblacion(object):
     
     '''
     En este metodo se comparan los fitness de todos los individuos y se retorna la posicion en la cual se encuentra el individuo con el mejor fitness
-    @return indice del mejor individuo
+    @return: indice del mejor individuo
     '''    
     def mejorIndividuo(self):
         indice = 0 #se asume que el primer individuo temporalmente es el mejor
@@ -265,7 +288,7 @@ class Poblacion(object):
     
     '''
     Este metodo se utiliza para obtener la informacion del mejor individuo en la iteracion en la que se invoque
-    @return mejor individuo
+    @return: mejor individuo
     '''    
     def imprimirMejorIndividuo(self):
         indice = self.mejorIndividuo() #Se busca el indice en el cual esta el mejor individup
@@ -274,12 +297,13 @@ class Poblacion(object):
     
     '''
     Este metodo simplemente retorna el log en el que guarda la informacion que se saque de la ejecucion del algoritmo
-    @return log de la ejecucion
+    @return: log de la ejecucion
     '''
     def generarLog(self):
         return self.log
     
-    '''
+    
+'''
 poblacion = Poblacion(10, 10, 4, 4, "a_4_1.txt", True, True)
 cromosoma = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
 print cromosoma

@@ -9,13 +9,17 @@ class Reemplazo(object):
     
     '''
     Constructor de la clase
-    @param si la estrategia de reemplazo es generacional (True) o Steady-State (False)
+    @param generacional: si la estrategia de reemplazo es generacional (True) o Steady-State (False)
     '''
     def __init__(self, generacional):
         self.mecanismo = generacional #se determina que mecanismo de reemplazo se va a utilizar
 
         
     '''
+    @param padre1:
+    @param padre2:
+    @param hijo1:
+    @param hijo2:
     '''    
     def realizarReemplazo(self, padre1, padre2, hijo1, hijo2):
         if self.mecanismo:
@@ -25,7 +29,12 @@ class Reemplazo(object):
         
         
     '''
-    'Estrategia de reemplazo generacional
+    Estrategia de reemplazo generacional
+    @param padre1:
+    @param padre2:
+    @param hijo1:
+    @param hijo2: 
+    @return: 
     '''
     def generacional(self, padre1, padre2, hijo1, hijo2):
         siguienteGeneracion = []
@@ -37,6 +46,9 @@ class Reemplazo(object):
     
     '''
     Estrategia de ruleta para definir el ganador entre dos individuos de acuerdo a su fitness
+    @param jugador1:
+    @param jugador2:
+    @return: 
     '''
     def ruleta(self, jugador1, jugador2):
         total = ( jugador1.obtenerFitness() + jugador2.obtenerFitness() ) #se suma el desempeno de los dos individuos, para normalizar la ruleta
@@ -53,6 +65,11 @@ class Reemplazo(object):
     
     
     '''
+    @param padre1:
+    @param padre2:
+    @param hijo1:
+    @param hijo2:
+    @return: 
     '''
     def steadyState(self, padre1, padre2, hijo1, hijo2):
         siguienteGeneracion = []
