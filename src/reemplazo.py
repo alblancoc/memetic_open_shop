@@ -1,4 +1,6 @@
 '''
+Esta clase determina las estrategias de reemplazo a utilizar en el algoritmo genetico
+
 Created on Apr 26, 2016
 
 @author: Angie Blanco
@@ -16,32 +18,34 @@ class Reemplazo(object):
 
         
     '''
-    @param padre1:
-    @param padre2:
-    @param hijo1:
-    @param hijo2:
+    Este metodo recibe a los dos padres y a los dos hijos, y define que individuos pasan a la siguiente generacion.
+    @param padre1: Representacion del primer padre
+    @param padre2: Representacion del segundo padre
+    @param hijo1: Representacion del primer hijo
+    @param hijo2: Representacion del segundo hijo
+    @return: individuos para la siguiente generaicon
     '''    
     def realizarReemplazo(self, padre1, padre2, hijo1, hijo2):
-        if self.mecanismo:
-            return self.generacional(padre1, padre2, hijo1, hijo2)
+        if self.mecanismo: #se determina si el mecanismo es generacional (True) o steady-state (False)
+            return self.generacional(padre1, padre2, hijo1, hijo2) #se invoca a generacional
         else:
-            return self.steadyState(padre1, padre2, hijo1, hijo2)
+            return self.steadyState(padre1, padre2, hijo1, hijo2) #se invoca a steady-state
         
         
     '''
-    Estrategia de reemplazo generacional
-    @param padre1:
-    @param padre2:
-    @param hijo1:
-    @param hijo2: 
-    @return: 
+    Estrategia de reemplazo generacional, en la cual quienes pasan a la siguien generacion son los hijos
+    @param padre1: Representacion del primer padre
+    @param padre2: Representacion del segundo padre
+    @param hijo1: Representacion del primer hijo
+    @param hijo2: Representacion del segundo hijo
+    @return: individuos para la siguiente generacion
     '''
     def generacional(self, padre1, padre2, hijo1, hijo2):
-        siguienteGeneracion = []
+        siguienteGeneracion = [] #vector de hijos 
         siguienteGeneracion.append(hijo1) #pasa el hijo 1
         siguienteGeneracion.append(hijo2) #pasa el hijo 2
         
-        return siguienteGeneracion
+        return siguienteGeneracion 
     
     
     '''
@@ -65,14 +69,15 @@ class Reemplazo(object):
     
     
     '''
-    @param padre1:
-    @param padre2:
-    @param hijo1:
-    @param hijo2:
-    @return: 
+    Empareja el mejor padre con el mejor hijo, el peor padre con el peor hijo, y mediante enfrentamientos en ruleta determina quienes pasan a la siguiente generacion
+    @param padre1: Representacion del primer padre
+    @param padre2: Representacion del segundo padre
+    @param hijo1: Representacion del primer hijo
+    @param hijo2: Representacion del segundo hijo
+    @return: individuos para la siguiente generacion
     '''
     def steadyState(self, padre1, padre2, hijo1, hijo2):
-        siguienteGeneracion = []
+        siguienteGeneracion = [] #vector que va a pasar a la siguiente genecion
         
         #de acuerdo a los desempenos, se deja al mejor padre como jugadorA, el mejor hijo como jugadorB, el peor padre como jugadorC, y el peor hijo como jugadorD
         if padre1.obtenerFitness() < padre2.obtenerFitness():
