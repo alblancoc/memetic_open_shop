@@ -1,7 +1,8 @@
 import sys
-import time
 
 '''
+Esta clase representa la medida de desempeno de los individuos en el algoritmo, calculando el makespan en una simulacion basada en eventos
+
 Created on Apr 26, 2016
 
 @author: Angie Blanco
@@ -10,9 +11,9 @@ class FuncionFitness(object):
     
     '''
     Constructor de la clase. Recibe la cantidad de maquinas y trabajos, y el archivo donde se almacena la matriz de tiempos correspondiente
-    @param maquinas:
-    @param trabajos:
-    @param archivo_tiempos: con matriz de tiempos
+    @param maquinas: cantidad de maquinas de la simulacion
+    @param trabajos: cantidad de trabajos de la simulacion
+    @param archivo_tiempos: archivo con matriz de tiempos
     '''
     def __init__(self, maquinas, trabajos, archivo_tiempos):
         self.maquinas = maquinas #cantidad de maquinas
@@ -20,22 +21,22 @@ class FuncionFitness(object):
         self.tareas = [] #vector de tareas definido por trabajos y maquinas
         self.tabla_tiempos = [] #tabla de tiempos
         
-        with open(archivo_tiempos, "r") as tiempos:
-            content = tiempos.readlines() #Add all the content to a list, where each line will be an element of the list
+        with open(archivo_tiempos, "r") as tiempos: #se lee el archivo de tiempos con la funcion "open"
+            contenido = tiempos.readlines() #se agrega todo el contenido del archivo a una variable 
 
-        for line in content:
-            line = line.replace(' \n', '').split(" ")
+        for linea in contenido: #Se toma cada una de las lineas en el contenido
+            linea = linea.replace(' \n', '').split(" ") #para la linea, se dividen los numeros por el espacio, y se ajusta el salto de la linea
             
-            line_ = []
-            for n in line:
-                line_.append(int(n)) 
+            linea_ = [] #se crea un vector para almacenar los tiempos de cada linea
+            for n in linea: #se toma cada tiempo de la linea
+                linea_.append(int(n))  #se agrega el tiempo al vector
             
-            self.tabla_tiempos.append(line_)
+            self.tabla_tiempos.append(linea_) #se agrega el vector de tiempos de la linea, a la tabla de tiempos
 
     
     '''
      Metodo utilizado para definir el vector de tareas en terminos de trabajo y maquina
-     @param individuo:
+     @param individuo: cromosoma del individuo con al permutacion de tareas
     '''    
     def iniciar(self, individuo):
         #se inicializa el vector de tareas con respecto a la cantidad de tareas en el cromosoma del individuo
@@ -67,7 +68,7 @@ class FuncionFitness(object):
     
     '''
     Metodo para calcular el makespan simulando el sistema open-shop de acuerdo al orden de tareas establecido en el individuo
-    @param individuo:
+    @param individuo: representacion genotipica del individuo
     @return: fitness del individuo
     '''
     def calcularFitness(self, individuo):

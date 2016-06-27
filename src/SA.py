@@ -1,44 +1,101 @@
-
-from random import random
+from funcionFitness import FuncionFitness
+import random 
 from math import exp
+from individuo import  Individuo
+import copy
 
-t = 15
-
-def cambiar(actual,vecino):
-    delta = vecino.obtenerFitness - actual.obtenerFitness 
-    if delta < 0:
-        return vecino
-    else:
-        prob = exp(-delta/t)
-        if random() < prob :
+class RecocidoSimulado(object):
+    
+    '''
+    Constructor de la clase
+    '''
+    def __init__(self, vecinos_, funcionFitness_):
+        self.vecinos = vecinos_
+        self.funcionFitness = funcionFitness_
+       
+        
+    '''
+    
+    ''' 
+    def cambiar(self, actual, vecino, temperatura):
+        delta = vecino.obtenerFitness() - actual.obtenerFitness() 
+        
+        if delta < 0:
             return vecino
         else:
-            return actual
-
-def act_temp(t):
-    t = t*0.9
-    return t
-
-def vecinos(actual, tamano):
-    vecindario = []
-    cont  = 1
-    while cont < tamano:
-        actual1 = actual
-        punto = random.randint(0, len(actual) - 2)
-        temp = actual1[punto]
-        actual1[punto] = actual1[punto+1]
-        actual1[punto+1] = temp
-        vecindario.append(acutal1)
-        cont += 1
+            prob = exp(-delta/temperatura)
+            if random.random() < prob:
+                return vecino
+            else:
+                return actual
     
-return vecindario
-
-
-def recocidosimulado(actual,t):
     
-    vecindario = vecinos(actual, 15)
-    for i in range(0,15):
-        mejor = cambiar(actual, vecindario[i])
-        t = act_temp(t)
+    '''
+    '''
+    def actualizarTemperatura(self, temperatura):
+        temperatura = temperatura * 0.8
+        return temperatura
+       
         
-return mejor
+    '''
+    '''    
+    def vecindario(self, actual):
+        vecindario_ = []
+        
+        for i in range( self.vecinos ):
+            cromosoma_ = copy.deepcopy(  actual.obtenerGenotipo() )
+            punto = random.randint(0, len( cromosoma_ ) - 2)
+            
+            temp = cromosoma_[punto]
+            cromosoma_[punto] = cromosoma_[punto + 1]
+            cromosoma_[punto + 1] = temp
+            
+            vecindario_.append( Individuo(cromosoma_, self.funcionFitness.calcularFitness(cromosoma_)) )
+        
+        return vecindario_
+    
+    def vecindario2(self, actual):
+        vecindario_ = []
+        
+        for i in range( self.vecinos ):
+            cromosoma_ = copy.deepcopy(  actual.obtenerGenotipo() )
+            punto1 = random.randint(0, len( cromosoma_ ) - 1)
+            punto2 = random.randint(0, len( cromosoma_ ) - 1)
+            temp = cromosoma_[punto1]
+            cromosoma_[punto1] = cromosoma_[punto2]
+            cromosoma_[punto2] = temp
+            
+            punto1 = random.randint(0, len( cromosoma_ ) - 1)
+            punto2 = random.randint(0, len( cromosoma_ ) - 1)
+            temp = cromosoma_[punto1]
+            cromosoma_[punto1] = cromosoma_[punto2]
+            cromosoma_[punto2] = temp
+            
+            vecindario_.append( Individuo(cromosoma_, self.funcionFitness.calcularFitness(cromosoma_)) )
+        
+        return vecindario_
+    
+    
+    def ejecutar(self, actual, temperatura):
+        
+        while temperatura > 1:
+            vecindario_ = self.vecindario2(actual)
+            for i in range( len( vecindario_ ) ):
+                actual = self.cambiar(actual, vecindario_[i], temperatura)
+                temperatura = self.actualizarTemperatura(temperatura)
+            
+        return actual
+
+
+'''
+chromosome = [i for i in range(1, 101, 1)]
+random.shuffle( chromosome )
+funcionFitness = FuncionFitness(10, 10, "a_10_1.txt")
+individual = Individuo(chromosome, funcionFitness.calcularFitness(chromosome))
+print individual
+
+sa = RecocidoSimulado(10, funcionFitness)
+newIndividual = sa.ejecutar(individual, 1000)
+
+print newIndividual
+'''

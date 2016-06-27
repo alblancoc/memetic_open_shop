@@ -5,6 +5,7 @@ from individuo import Individuo
 from random import randint
 from random import random
 from random import shuffle
+from SA import RecocidoSimulado
 
 '''
 Created on Apr 26, 2016
@@ -37,6 +38,7 @@ class Poblacion(object):
         
         self.funcionFitness = FuncionFitness(maquinas, trabajos, entrada)
         self.mecanismoReemplazo = Reemplazo( generacional )
+        self.recocidoSimulado = RecocidoSimulado( 5, self.funcionFitness )
         
         self.log = ""
         self.operadores = OperadoresGeneticos()
@@ -112,29 +114,31 @@ class Poblacion(object):
     
                 candidatos_nuevos = self.mecanismoReemplazo.realizarReemplazo(padres[0], padres[1], hijos[0], hijos[1])
                 
-                nueva_generacion.append( candidatos_nuevos[0] )
-                nueva_generacion.append( candidatos_nuevos[1] )
+                nueva_generacion.append( self.recocidoSimulado.ejecutar( candidatos_nuevos[0], 3) )
+                nueva_generacion.append( self.recocidoSimulado.ejecutar( candidatos_nuevos[1], 3) )
                 
             self.poblacion = None
             self.poblacion = nueva_generacion
     
        
     '''
+    Este metodo se utiliza para determinar a que trabajo pertenece una tarea dentro de la permutacion
     @param m:
     @return: 
     '''        
-    def trabajo(self, m):
-        f = int((m - 1) / self.trabajos)
-        return f
+    def trabajo(self, n):
+        t = int((n - 1) / self.trabajos)
+        return t
     
     
     '''
+    Este metodo se utiliza para determinar a que maquina pertenece una tarea dentro de la permutacion
     @param n:
     @return: 
     '''
     def maquina(self, n):
-        c = n % self.maquinas 
-        return c 
+        m = n % self.maquinas 
+        return m 
         
         
     '''
@@ -195,6 +199,7 @@ class Poblacion(object):
     
     
     '''
+    Este metodo representa la seleccion de padres mediante un mecanismo uniforme, en donde el fitness no es tenido en cuenta
     @return: 
     '''
     def seleccionUniforme(self):
@@ -257,16 +262,18 @@ class Poblacion(object):
     
     
     '''
+    Este metodo se utiliza para calcular el fitness promedio de la poblacion en un isntante de tiempo dato
+    @return: fitmess promedio en la poblacion
     '''
     def fitnessPromedio(self):
         fitnessProm = 0
         
-        for individuo in  self.poblacion:
-            fitnessProm += individuo.obtenerFitness()
+        for individuo in  self.poblacion: #se recorren todos los individuos
+            fitnessProm += individuo.obtenerFitness() #se guarda en una variable acumuladora todo los fitness
         
-        fitnessProm /= self.tamano
+        fitnessProm /= self.tamano #se divide el fitness acumulado por la cantidad de individuos de la poblacion, para ai obtener el promedio
         
-        return fitnessProm
+        return fitnessProm #retorna el promedio
         
     
     '''

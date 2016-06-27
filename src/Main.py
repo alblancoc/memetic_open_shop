@@ -20,12 +20,12 @@ tiempo_inicio = time.time()
     
 
 #Si la poblacion o las iteraciones son muy pequenas no se ejecuta el algoritmo
-if tamano < 6:
+if tamano < 10:
     print "La poblacion es demadiado pequena"
     sys.exit()
     
 if iteraciones < 10:
-    print "La cantida dde iteraciones es demadiado pequena"
+    print "La cantidad de iteraciones es demadiado pequena"
     sys.exit()
     
 
