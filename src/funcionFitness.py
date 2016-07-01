@@ -1,4 +1,5 @@
 import sys
+import time
 
 '''
 Esta clase representa la medida de desempeno de los individuos en el algoritmo, calculando el makespan en una simulacion basada en eventos
@@ -71,7 +72,7 @@ class FuncionFitness(object):
     @param individuo: representacion genotipica del individuo
     @return: fitness del individuo
     '''
-    def calcularFitness(self, individuo):
+    def calcularFitness_eventos(self, individuo):
         self.tareas = [] #se inicializa el vector de tareas
         self.iniciar(individuo) #se asignan las tareas de acuerdo al orden de operaciones definido en el individuo
         
@@ -137,15 +138,42 @@ class FuncionFitness(object):
         #se retorna el tiempo final de la simulacion                
         return tiempo + 1
     
-''' 
-tiempo_inicio = time.time() 
-
+    
+    
+    def mayor(self, tiempo_trabajo, tiempo_maquina):
+        return tiempo_trabajo if tiempo_trabajo > tiempo_maquina else tiempo_maquina
+    
+    
+    def calcularFitness(self, individuo):
+        self.tareas = [] #se inicializa el vector de tareas
+        self.iniciar(individuo) #se asignan las tareas de acuerdo al orden de operaciones definido en el individuo
+        
+        maquinas_tiempo = [ 0 for i in range(self.maquinas) ]
+        trabajos_tiempo = [ 0 for i in range(self.trabajos) ]
+        
+        for tarea in self.tareas:
+            tiempo_tarea = self.tabla_tiempos[ tarea[0] ][ tarea[1] ]
+            trabajos_tiempo[ tarea[0] ] = maquinas_tiempo[ tarea[1] ] = self.mayor( trabajos_tiempo[ tarea[0] ], maquinas_tiempo[ tarea[1] ] ) + tiempo_tarea
+        
+        tiempo = max( max(trabajos_tiempo), max(maquinas_tiempo) )
+        return tiempo
+    
+'''
 file = raw_input()
 
 fitness = FuncionFitness(4, 4, file)
 individual = [9, 3, 13, 15, 8, 10, 5, 2, 7, 16, 12, 4, 14, 11, 1, 6]
 print fitness.tabla_tiempos
-tiempo_total = time.time() - tiempo_inicio
+
+tiempo_inicio = time.time()
 print fitness.calcularFitness(individual)
+tiempo_total = time.time() - tiempo_inicio
 print tiempo_total
+
+
+tiempo_inicio = time.time()
+print fitness.carcularFitness_fast(individual)
+tiempo_total = time.time() - tiempo_inicio
+print tiempo_total
+
 '''
