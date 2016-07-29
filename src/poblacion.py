@@ -38,7 +38,7 @@ class Poblacion(object):
         
         self.funcionFitness = FuncionFitness(maquinas, trabajos, entrada)
         self.mecanismoReemplazo = Reemplazo( generacional )
-        self.recocidoSimulado = RecocidoSimulado( 5, self.funcionFitness )
+        self.recocidoSimulado = RecocidoSimulado( 10, self.funcionFitness )
         
         self.log = ""
         self.operadores = OperadoresGeneticos()
@@ -114,8 +114,10 @@ class Poblacion(object):
     
                 candidatos_nuevos = self.mecanismoReemplazo.realizarReemplazo(padres[0], padres[1], hijos[0], hijos[1])
                 
-                nueva_generacion.append( self.recocidoSimulado.ejecutar( candidatos_nuevos[0], 3) )
-                nueva_generacion.append( self.recocidoSimulado.ejecutar( candidatos_nuevos[1], 3) )
+                nueva_generacion.append( candidatos_nuevos[0] )
+                nueva_generacion.append( candidatos_nuevos[1] )
+                #nueva_generacion.append( self.recocidoSimulado.ejecutar( candidatos_nuevos[0], 10) )
+                #nueva_generacion.append( self.recocidoSimulado.ejecutar( candidatos_nuevos[1], 10) )
                 
             self.poblacion = None
             self.poblacion = nueva_generacion
